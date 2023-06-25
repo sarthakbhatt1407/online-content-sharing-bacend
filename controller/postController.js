@@ -44,7 +44,6 @@ const createNewPost = async (req, res, next) => {
       creator,
       category: [],
       time: fullDate,
-      likedByMe: false,
     });
     result = await createdPost.save();
   } catch (err) {
@@ -202,7 +201,6 @@ const addLikesOnPost = async (req, res, next) => {
   if (userFound) {
     if (post.likes.length > 0) {
       if (urlTarget === "remove") {
-        post.likedByMe = false;
         const updatedlikes = likes.filter((u) => {
           return u.userId != userId;
         });
@@ -219,7 +217,6 @@ const addLikesOnPost = async (req, res, next) => {
         userId: userId,
       };
       likes.push(obj);
-      post.likedByMe = true;
     }
   }
   try {
@@ -229,6 +226,28 @@ const addLikesOnPost = async (req, res, next) => {
   }
 
   res.status(200).json({ message: "done" });
+};
+
+const postLikedVerifier = async (req, res, next) => {
+  const { postId, userId } = req.params;
+  let post;
+  try {
+    post = await Post.findById(postId);
+    if (!post) {
+      throw new Error();
+    }
+  } catch (err) {
+    return res.status(404).json({ message: "No Post Found" });
+  }
+  let likes = post.likes;
+  const userFound = likes.find((u) => {
+    return u.userId == userId;
+  });
+  if (userFound) {
+    return res.status(200).json({ userFound: true });
+  } else {
+    return res.status(200).json({ userFound: false });
+  }
 };
 
 const addToFavoriteOrRemove = async (req, res, next) => {
@@ -315,3 +334,4 @@ exports.addLikesOnPost = addLikesOnPost;
 exports.editPostByPostId = editPostByPostId;
 exports.addToFavoriteOrRemove = addToFavoriteOrRemove;
 exports.postFoundOnFavorites = postFoundOnFavorites;
+exports.postLikedVerifier = postLikedVerifier;

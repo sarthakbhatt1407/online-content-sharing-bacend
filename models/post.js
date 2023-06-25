@@ -9,7 +9,6 @@ const postSchema = mongoose.Schema({
   creator: { type: String, required: true },
   category: { type: Array, required: true },
   time: { type: String, required: true },
-  likedByMe: { type: Boolean, required: true },
 });
 
 module.exports = mongoose.model("Post", postSchema);

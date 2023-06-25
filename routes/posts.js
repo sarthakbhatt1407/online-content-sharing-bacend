@@ -17,6 +17,7 @@ router.delete("/:id/comments/delete/:cId", postController.deleteComment);
 
 // Likes
 router.post("/:id/likes/:action", postController.addLikesOnPost);
+router.get("/:postId/likes/:userId", postController.postLikedVerifier);
 
 // favorite
 router.post("/:id/favorite/:action", postController.addToFavoriteOrRemove);
