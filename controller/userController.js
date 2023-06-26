@@ -40,7 +40,7 @@ const userRegistration = async (req, res, next) => {
     } catch (err) {
       return res.status(403).json({ message: "Unable to register user." });
     }
-    res.status(201).json({ message: "Sign up successful" });
+    res.status(201).json({ message: "Sign up successful.." });
   }
 };
 
