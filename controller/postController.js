@@ -34,9 +34,8 @@ const createNewPost = async (req, res, next) => {
   let result;
   const image = req.file.path;
   try {
-    const { title, desc, creator } = req.body;
+    const { desc, creator } = req.body;
     const createdPost = new Post({
-      title,
       desc,
       image,
       comments: [],

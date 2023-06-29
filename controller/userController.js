@@ -87,9 +87,13 @@ const getUserByUserId = async (req, res, next) => {
   } catch (error) {
     return res.status(404).json({ message: "User Not Found" });
   }
-  res.status(200).json({ name: user.name, image: user.image });
+  res.status(200).json({
+    name: user.name,
+    image: user.image,
+    userId: user.id,
+    friends: user.friends,
+  });
 };
-
 const emailVerifier = async (req, res, next) => {
   const { email } = req.body;
   let user;
