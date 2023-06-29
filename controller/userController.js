@@ -111,6 +111,7 @@ const getUserByUserId = async (req, res, next) => {
     image: user.image,
     userId: user.id,
     friends: user.friends,
+    userSince: user.userSince,
   });
 };
 const emailVerifier = async (req, res, next) => {
