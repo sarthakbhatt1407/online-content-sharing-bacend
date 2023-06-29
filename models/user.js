@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
   likedPost: { type: Array },
   pendingRequest: { type: Array },
   image: { type: String },
+  userSince: { type: String, required: true },
 });
 
 module.exports = mongoose.model("User", userSchema);

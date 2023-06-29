@@ -2,6 +2,20 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const validateEmail = (email) => {
   return String(email)
@@ -13,6 +27,10 @@ const validateEmail = (email) => {
 const userRegistration = async (req, res, next) => {
   const { name, email, password, friends, chats, likedPost, pendingRequest } =
     req.body;
+  const date = new Date();
+  let day = date.getDate();
+  let month = date.getMonth();
+  let year = date.getFullYear();
   const image = req.file.path;
   const hashedPass = await bcrypt.hash(password, 12);
   let user = await User.findOne({ email: email });
@@ -31,6 +49,7 @@ const userRegistration = async (req, res, next) => {
       likedPost,
       pendingRequest,
       image,
+      userSince: months[month] + " " + year,
     });
     if (!validateEmail(email)) {
       return res.status(404).json({ message: "Invalid Email" });
