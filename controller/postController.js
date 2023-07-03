@@ -2,8 +2,18 @@ const Post = require("../models/post");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const User = require("../models/user");
+
 const createNewPost = async (req, res, next) => {
-  const date = new Date();
+  const currentTime = new Date();
+
+  const currentOffset = currentTime.getTimezoneOffset();
+
+  const ISTOffset = 330; // IST offset UTC +5:30
+
+  const date = new Date(
+    currentTime.getTime() + (ISTOffset + currentOffset) * 60000
+  );
+
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
