@@ -85,7 +85,12 @@ const userLogin = async (req, res, next) => {
 
     user.password = "Keep Guessing";
     res.json({
-      user: { name: user.name, email: user.email, id: user.id },
+      user: {
+        name: user.name,
+        email: user.email,
+        id: user.id,
+        image: user.image,
+      },
       message: "Logged In",
       isloggedIn: true,
       token: token,
@@ -112,6 +117,7 @@ const getUserByUserId = async (req, res, next) => {
     userId: user.id,
     friends: user.friends,
     userSince: user.userSince,
+    pendingRequest: user.pendingRequest,
   });
 };
 const getUserChatsById = async (req, res, next) => {
@@ -325,6 +331,31 @@ const messageSender = async (req, res, next) => {
   res.status(201).json({ message: "Msg Sent" });
 };
 
+const pendingReqDeleter = async (req, res, next) => {
+  const { userId, pendingReqId } = req.body;
+  let user;
+  try {
+    user = await User.findById(userId);
+    if (!user) {
+      throw new Error();
+    }
+  } catch (error) {
+    return res.status(400).json({ message: "Unable to accept" });
+  }
+  const updatedPendingReq = user.pendingRequest.filter((user) => {
+    return user.id != pendingReqId;
+  });
+  user.pendingRequest = updatedPendingReq;
+  try {
+    await user.save();
+  } catch (error) {
+    return res.status(400).json({ message: "Unable to Send" });
+  }
+  res
+    .status(200)
+    .json({ message: "Request Deleted", pendingRequest: user.pendingRequest });
+};
+
 exports.userRegistration = userRegistration;
 exports.userLogin = userLogin;
 exports.emailVerifier = emailVerifier;
@@ -335,3 +366,4 @@ exports.friendRequestAccepter = friendRequestAccepter;
 exports.messageSender = messageSender;
 exports.getUserByUserId = getUserByUserId;
 exports.getUserChatsById = getUserChatsById;
+exports.pendingReqDeleter = pendingReqDeleter;
