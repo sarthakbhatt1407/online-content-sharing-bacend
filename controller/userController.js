@@ -44,10 +44,10 @@ const userRegistration = async (req, res, next) => {
       name,
       email,
       password: hashedPass,
-      friends,
-      chats,
-      likedPost,
-      pendingRequest,
+      friends: [],
+      chats: [],
+      likedPost: [],
+      pendingRequest: [],
       image,
       userSince: months[month] + " " + year,
     });
@@ -112,6 +112,21 @@ const getUserByUserId = async (req, res, next) => {
     userId: user.id,
     friends: user.friends,
     userSince: user.userSince,
+  });
+};
+const getUserChatsById = async (req, res, next) => {
+  const id = req.params.id;
+  let user;
+  try {
+    user = await User.findById(id);
+    if (!user) {
+      throw new Error();
+    }
+  } catch (error) {
+    return res.status(404).json({ message: "User Not Found" });
+  }
+  res.status(200).json({
+    chats: user.chats,
   });
 };
 const emailVerifier = async (req, res, next) => {
@@ -206,9 +221,11 @@ const friendRequestSender = async (req, res, next) => {
 const friendRequestAccepter = async (req, res, next) => {
   const { userId, pendingReqId } = req.body;
   let user;
+  let pendingReqUser;
   try {
     user = await User.findById(userId);
-    if (!user) {
+    pendingReqUser = await User.findById(pendingReqId);
+    if (!user && !pendingReqUser) {
       throw new Error();
     }
   } catch (error) {
@@ -227,9 +244,16 @@ const friendRequestAccepter = async (req, res, next) => {
     return res.status(404).json({ message: "No Request Found" });
   }
   user.pendingRequest = updatedPendingReq;
+  const userObj = {
+    name: user.name,
+    image: user.image,
+    id: user.id,
+  };
   user.friends.push(pendingReqObj);
+  pendingReqUser.friends.push(userObj);
   try {
     await user.save();
+    await pendingReqUser.save();
   } catch (error) {
     return res.status(400).json({ message: "Unable to accept" });
   }
@@ -249,11 +273,17 @@ const messageSender = async (req, res, next) => {
   } catch (error) {
     return res.status(400).json({ message: "Unable to Send" });
   }
-  const obj = { msg: msg, id: sender };
+  const obj = {
+    msg: msg,
+    id: sender,
+    name: userSending.name,
+    image: userSending.image,
+  };
 
-  const userSendingChats = userSending.chats;
-  const userToChats = userTo.chats;
+  let userSendingChats = userSending.chats;
+  let userToChats = userTo.chats;
   if (userSendingChats.length === 0) {
+    userSendingChats = [];
     userSendingChats.push({});
     userSendingChats[0][to] = [];
     userSendingChats[0][to].push(obj);
@@ -268,6 +298,7 @@ const messageSender = async (req, res, next) => {
     }
   }
   if (userToChats.length === 0) {
+    userToChats = [];
     userToChats.push({});
     userToChats[0][sender] = [];
     userToChats[0][sender].push(obj);
@@ -303,3 +334,4 @@ exports.friendRequestSender = friendRequestSender;
 exports.friendRequestAccepter = friendRequestAccepter;
 exports.messageSender = messageSender;
 exports.getUserByUserId = getUserByUserId;
+exports.getUserChatsById = getUserChatsById;

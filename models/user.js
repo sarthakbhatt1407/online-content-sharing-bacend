@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   friends: { type: Array },
-  chats: { type: Object },
+  chats: { type: Array },
   likedPost: { type: Array },
   pendingRequest: { type: Array },
   image: { type: String },

@@ -14,6 +14,7 @@ router.post("/login", usersController.userLogin);
 router.post("/forgot-password/email-verifier", usersController.emailVerifier);
 router.post("/forgot-password/reset-password", usersController.passwordReseter);
 router.get("/all-users", usersController.getAllUsers);
+router.get("/:id/chats", usersController.getUserChatsById);
 router.get("/:id", usersController.getUserByUserId);
 router.post("/friend-request/send", usersController.friendRequestSender);
 router.post("/friend-request/accept", usersController.friendRequestAccepter);
