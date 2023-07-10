@@ -356,6 +356,28 @@ const pendingReqDeleter = async (req, res, next) => {
     .json({ message: "Request Deleted", pendingRequest: user.pendingRequest });
 };
 
+const friendVerifier = async (req, res, next) => {
+  const { myUserId, userId } = req.body;
+  let user;
+  try {
+    user = await User.findById(myUserId);
+    if (!user) {
+      throw new Error();
+    }
+  } catch (error) {
+    return res.status(400).json({ message: "Unable to find user" });
+  }
+  const friends = user.friends;
+  const isFriend = friends.find((user) => {
+    return user.id === userId;
+  });
+  if (isFriend) {
+    res.status(200).json({ isFriend: true });
+  } else {
+    res.status(200).json({ isFriend: false });
+  }
+};
+
 exports.userRegistration = userRegistration;
 exports.userLogin = userLogin;
 exports.emailVerifier = emailVerifier;
@@ -367,3 +389,4 @@ exports.messageSender = messageSender;
 exports.getUserByUserId = getUserByUserId;
 exports.getUserChatsById = getUserChatsById;
 exports.pendingReqDeleter = pendingReqDeleter;
+exports.friendVerifier = friendVerifier;
