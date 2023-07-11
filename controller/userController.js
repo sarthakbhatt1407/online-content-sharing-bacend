@@ -118,6 +118,7 @@ const getUserByUserId = async (req, res, next) => {
     friends: user.friends,
     userSince: user.userSince,
     pendingRequest: user.pendingRequest,
+    likedPost: user.likedPost,
   });
 };
 const getUserChatsById = async (req, res, next) => {
