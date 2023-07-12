@@ -11,6 +11,11 @@ router.post(
   usersController.userRegistration
 );
 router.post("/login", usersController.userLogin);
+router.post(
+  "/change-info",
+  fileUpload.single("image"),
+  usersController.changeUserInfo
+);
 router.post("/forgot-password/email-verifier", usersController.emailVerifier);
 router.post("/forgot-password/reset-password", usersController.passwordReseter);
 router.get("/all-users", usersController.getAllUsers);
