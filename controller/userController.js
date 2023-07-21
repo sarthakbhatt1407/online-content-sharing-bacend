@@ -405,6 +405,87 @@ const changeUserInfo = async (req, res, next) => {
   return res.status(200).json({ message: "Information Updated" });
 };
 
+const unfriendUser = async (req, res, next) => {
+  const { myUserId, userId } = req.body;
+  let userByInfo;
+  let userToInfo;
+  try {
+    userByInfo = await User.findById(myUserId);
+    userToInfo = await User.findById(userId);
+    if (!userByInfo && !userToInfo) {
+      throw new Error();
+    }
+  } catch (err) {
+    return res.status(404).json({ message: "Server Not Responding" });
+  }
+  const myUserIdFriends = userByInfo.friends;
+  const userIdFriends = userToInfo.friends;
+  const updatedMyuseridfriends = myUserIdFriends.filter((friend) => {
+    return friend.id != userId;
+  });
+  const updateduseridfriends = userIdFriends.filter((friend) => {
+    return friend.id != myUserId;
+  });
+  userByInfo.friends = updatedMyuseridfriends;
+  userToInfo.friends = updateduseridfriends;
+  try {
+    await userByInfo.save();
+    await userToInfo.save();
+  } catch (error) {
+    return res.status(400).json({ message: "Unable to unfriend" });
+  }
+  return res.status(200).json({ message: "Friend Removed From List" });
+};
+const getBackFriendRequest = async (req, res, next) => {
+  const { myUserId, userId } = req.body;
+
+  let userToInfo;
+  try {
+    userToInfo = await User.findById(userId);
+    if (!userToInfo) {
+      throw new Error();
+    }
+  } catch (err) {
+    return res.status(404).json({ message: "Server Not Responding" });
+  }
+  const userIdPendingRequest = userToInfo.pendingRequest;
+
+  const updateduseridPendingRequest = userIdPendingRequest.filter((friend) => {
+    return friend.id != myUserId;
+  });
+  userToInfo.pendingRequest = updateduseridPendingRequest;
+  try {
+    await userToInfo.save();
+  } catch (error) {
+    return res.status(400).json({ message: "Unable to get back request" });
+  }
+  return res.status(200).json({ message: "Friend Request Removed" });
+};
+
+const pendingRequestVerifier = async (req, res, next) => {
+  const { myUserId, userId } = req.body;
+
+  let userToInfo;
+  try {
+    userToInfo = await User.findById(userId);
+    if (!userToInfo) {
+      throw new Error();
+    }
+  } catch (err) {
+    return res.status(404).json({ message: "Server Not Responding" });
+  }
+  const userIdPendingRequest = userToInfo.pendingRequest;
+
+  const userFound = userIdPendingRequest.find((friend) => {
+    return friend.id === myUserId;
+  });
+  if (userFound) {
+    return res.status(200).json({ reqFound: true });
+  }
+
+  return res.status(200).json({ reqFound: false });
+};
+
 exports.userRegistration = userRegistration;
 exports.userLogin = userLogin;
 exports.emailVerifier = emailVerifier;
@@ -418,3 +499,6 @@ exports.getUserChatsById = getUserChatsById;
 exports.pendingReqDeleter = pendingReqDeleter;
 exports.friendVerifier = friendVerifier;
 exports.changeUserInfo = changeUserInfo;
+exports.unfriendUser = unfriendUser;
+exports.getBackFriendRequest = getBackFriendRequest;
+exports.pendingRequestVerifier = pendingRequestVerifier;

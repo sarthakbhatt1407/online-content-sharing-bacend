@@ -26,5 +26,7 @@ router.post("/friend-request/accept", usersController.friendRequestAccepter);
 router.post("/friend/verify", usersController.friendVerifier);
 router.post("/friend-request/delete", usersController.pendingReqDeleter);
 router.post("/message/send", usersController.messageSender);
-
+router.post("/unfriend", usersController.unfriendUser);
+router.post("/request-unsender", usersController.getBackFriendRequest);
+router.post("/pending-request-verify", usersController.pendingRequestVerifier);
 module.exports = router;
